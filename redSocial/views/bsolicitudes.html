@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block titulo %} Solicitudes – Red Social {% endblock %}
+{% block contenido_principal %}
+
+<h2>Solicitudes de amistad</h2>
+<div class="row">
+    {% if solicitudes.length >= 1 %}
+    <!-- http://librosweb.es/libro/bootstrap_3/capitulo_2/tipos_de_rejillas.html -->
+    <!-- Inicio del Bloque usuarios -->
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th>Nombre</th>
+                <th class="col-md-1"></th>
+                <th class="col-md-1"></th>
+                <th class="col-md-1"></th>
+                <th class="col-md-1"></th>
+                <th class="col-md-1"></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for solicitud in solicitudes %}
+            <tr>
+                <td>{{solicitud.name}}</td>
+                <td><a href="/aceptar/{{ solicitud._id.toString() }}">Aceptar solicitud</a></td>
+            </tr>
+            {% endfor %}
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+    {% if solicitudes.length <= 0 %}
+    <div class="media-body">
+       <p>  No hay solicitudes pendientes</p>
+    </div>
+    {% endif %}
+
+    <!-- Fin del Bloque usuarios -->
+</div>
+
+<!-- Paginación mostrar la actual y 2 anteriores y dos siguientes -->
+<div class="row text-center">
+    <ul class="pagination">
+        <!-- Primera -->
+        <li class="page-item">
+            <a class="page-link" href="/solicitudes?pg=1">Primera</a>
+        </li>
+
+        <!-- Anterior (si la hay ) -->
+        {% if pgActual-1 >= 1 %}
+        <li class="page-item">
+            <a class="page-link" href="/solicitudes?pg={{ pgActual -1 }}">{{ pgActual -1 }}</a>
+        </li>
+        {% endif %}
+
+        <!-- Actual -->
+        <li class="page-item active">
+            <a class="page-link" href="/solicitudes?pg={{ pgActual }}">{{ pgActual }}</a>
+        </li>
+
+        <!-- Siguiente (si la hay) -->
+        {% if pgActual+1 <= pgUltima %}
+        <li class="page-item">
+            <a class="page-link" href="/solicitudes?pg={{ pgActual+1 }}">{{ pgActual+1 }}</a>
+        </li>
+        {% endif %}
+
+        <!-- Última -->
+        <li class="page-item">
+            <a class="page-link" href="/solicitudes?pg={{ pgUltima }}">Última</a>
+        </li>
+    </ul>
+</div>
+{% endblock %}
