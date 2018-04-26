@@ -104,7 +104,7 @@ module.exports = {
             } else {
                 var collection = db.collection('usuarios');
                 collection.update(criterio, {
-                    $addToSet : {amigos : [usuarioAmigo]}
+                    $addToSet : {amigos : usuarioAmigo}
                 }, function(err, result) {
                     if (err) {
                         funcionCallback(null);
