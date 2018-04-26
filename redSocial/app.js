@@ -12,6 +12,11 @@ var mongo = require('mongodb');
 
 var swig = require('swig');
 
+//Filtro personalizado
+swig.setFilter('contains', function(arr, value) {
+    return arr.indexOf(value) != -1;
+});
+
 var crypto = require('crypto');
 
 var bodyParser = require('body-parser');

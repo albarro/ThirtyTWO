@@ -59,7 +59,8 @@ module.exports = function (app, swig, gestorBD) {
             } else {
                 req.session.usuario = usuarios[0].email;
                 usuarioActivo = true;
-                res.redirect("/usuarios");
+                res.redirect("/usuarios?mensaje=Bienvenido "+ usuarios[0].email +
+                    "&tipoMensaje=alert-success");
             }
         });
     });
@@ -91,9 +92,10 @@ module.exports = function (app, swig, gestorBD) {
             if (usuarios == null) {
                 res.send("Error al listar ");
             } else {
+                console.log(usuarios);
 
-                var pgUltima = total/6;
-                if (total % 6 > 0 ){ // Sobran decimales
+                var pgUltima = total/5;
+                if (total % 5 > 0 ){ // Sobran decimales
                     pgUltima = Math.trunc(pgUltima+1);
                 }
 

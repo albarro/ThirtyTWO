@@ -66,7 +66,7 @@ module.exports = {
             } else {
                 var collection = db.collection('usuarios');
                 collection.update(criterio, {
-                    $addToSet : {solicitudes : [usuarioActivo]}
+                    $addToSet : {solicitudes : usuarioActivo}
                 }, function(err, result) {
                     if (err) {
                         funcionCallback(null);
@@ -85,7 +85,7 @@ module.exports = {
             } else {
                 var collection = db.collection('usuarios');
                 collection.update(criterio, {
-                    $pull : {solicitudes : [usuarioSolicitud]}
+                    $pull : {solicitudes : usuarioSolicitud}
                 }, function(err, result) {
                     if (err) {
                         funcionCallback(null);
