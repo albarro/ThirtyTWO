@@ -92,7 +92,6 @@ module.exports = function (app, swig, gestorBD) {
             if (usuarios == null) {
                 res.send("Error al listar ");
             } else {
-                console.log(usuarios);
 
                 var pgUltima = total/5;
                 if (total % 5 > 0 ){ // Sobran decimales

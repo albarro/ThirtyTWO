@@ -28,6 +28,7 @@
                 <th>Nombre</th>
                 <th>Email</th>
                 <th class="col-md-1"></th>
+                <th class="col-md-1"></th>
             </tr>
             </thead>
             <tbody>
@@ -36,10 +37,10 @@
             <tr>
                 <td>{{usuario.name}}</td>
                 <td>{{usuario.email}}</td>
-                {% if usuario.solicitudes|contains(usuarioActual) %}
-                <td>Ya se ha eniado una solicitud</td>
-                {% elseif usuario.amigos|contains(usuarioActual) %}
-                <td>Ya sois amigos</a></td>
+                {% if usuario.amigos|contains(usuarioActual)%}
+                <td>Ya sois amigos</td>
+                {% elseif usuario.solicitudes|contains(usuarioActual) %}
+                <td>Ya se ha eniado una solicitud</a></td>
                 {% else %}
                 <td><a href="/solicitud/{{ usuario._id.toString() }}">Agregar amigo</a></td>
                 {% endif %}
