@@ -1,30 +1,41 @@
 package tests;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import org.junit.*;
+import org.bson.Document;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
+
+import com.mongodb.MongoClient;
+import com.mongodb.MongoClientURI;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
 
 import util.SeleniumUtils;
 import util.views.PO_HomeView;
 import util.views.PO_LoginView;
 import util.views.PO_NavView;
 import util.views.PO_PrivateView;
-import util.views.PO_Properties;
 import util.views.PO_RegisterView;
 import util.views.PO_View;
-
+     
+        
 //Ordenamos las pruebas por el nombre del mÃ©todo
 //	@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ThirtiTest {
 	// En Windows (Debe ser la versiÃ³n 46.0 y desactivar las actualizacioens
 	// automÃ¡ticas)):
-	static String PathFirefox = "E:\\cosas\\Universidad\\3Curso\\SDI\\Firefox46.0.win\\Firefox46.win\\FirefoxPortable.exe";
+	static String PathFirefox = "C:\\Users\\Álvaro\\Desktop\\Firefox46.win\\FirefoxPortable.exe";
 	// En MACOSX (Debe ser la versiÃ³n 46.0 y desactivar las actualizaciones
 	// automÃ¡ticas):
 	// static String PathFirefox =
@@ -55,6 +66,16 @@ public class ThirtiTest {
 	// Antes de la primera prueba
 	@BeforeClass
 	static public void begin() {
+		MongoClientURI uri  = new MongoClientURI("mongodb://admin:sdi_2018@ds139219.mlab.com:39219/red-social"); 
+        MongoClient client = new MongoClient(uri);
+        MongoDatabase db = client.getDatabase(uri.getDatabase());
+        
+        MongoCollection<Document> usuarios = db.getCollection("usuarios");
+        Document user = new Document();
+        user.append("email", "pruebaDefinitiva@prueba.com");
+        usuarios.deleteOne(user);
+
+        driver.manage().deleteAllCookies();
 	}
 
 	// Al finalizar la Ãºltima prueba
@@ -94,6 +115,7 @@ public class ThirtiTest {
 		PO_HomeView.clickOption(driver, "identificarse", "class", "btn btn-primary");
 		PO_LoginView.fillForm(driver, "pruebaDefinitiva@prueba.com", "55555");
 		PO_View.checkElement(driver, "text", "Bienvenido");
+		PO_HomeView.clickOption(driver, "desconectarse", "class", "btn btn-primary");
 	}
 
 	//2.2 [InInVal] Inicio de sesión con datos inválidos (usuario no existente en la aplicación).
@@ -104,34 +126,31 @@ public class ThirtiTest {
 		PO_View.checkElement(driver, "text", "Identificación");
 	}
 
-	/**
+	
 	@Test
 	public void PR031() {
 		PO_HomeView.clickOption(driver, "identificarse", "class", "btn btn-primary");
 		PO_LoginView.fillForm(driver, "pruebaDefinitiva@prueba.com", "55555");
-		PO_View.checkElement(driver, "text", "Bienvenido");
-		List<WebElement> elementos = PO_View.checkElement(driver, "free", "//li[contains(@id,'users-menu')]/a");
-		elementos.get(0).click();
-
-		elementos = PO_View.checkElement(driver, "free", "//a[contains(@href, 'user/list')]");
-		elementos.get(0).click();
+		PO_View.checkElement(driver, "text", "Bienvenido"); 
 
 		// Comprobamos que los elementos son 5 dado que la pagina esta llena.
-		elementos = SeleniumUtils.EsperaCargaPagina(driver, "free", "//tbody/tr",
+		List<WebElement> elementos = SeleniumUtils.EsperaCargaPagina(driver, "free", "//tbody/tr",
 				PO_View.getTimeout());
-		assertTrue(elementos.size() == 5);
+		SeleniumUtils.esperarSegundos(driver, 2);
+		assertEquals(5, elementos.size());
 		
-		PO_NavView.clickOption(driver, "logout", "text", "IdentifÃ­cate");
+		PO_HomeView.clickOption(driver, "desconectarse", "class", "btn btn-primary");
 	}
+
 
 	@Test
 	public void PR032() {
 		PO_HomeView.clickOption(driver, "identificarse", "class", "btn btn-primary");
 		PO_LoginView.fillForm(driver, "pruebaDefinitiva2@prueba.com", "55555");
-		PO_View.checkElement(driver, "text", "IdentifÃ­cate");
+		PO_View.checkElement(driver, "text", "de usuario");
 
-		driver.navigate().to("http://localhost:8090/user/list");
-		PO_View.checkElement(driver, "text", "IdentifÃ­cate");
+		driver.navigate().to("http://localhost:8081/usuarios");
+		PO_View.checkElement(driver, "text", "de usuario");
 	}
 
 	@Test
@@ -139,48 +158,61 @@ public class ThirtiTest {
 		PO_HomeView.clickOption(driver, "identificarse", "class", "btn btn-primary");
 		PO_LoginView.fillForm(driver, "pruebaDefinitiva@prueba.com", "55555");
 		PO_View.checkElement(driver, "text", "Bienvenido");
-		List<WebElement> elementos = PO_View.checkElement(driver, "free", "//li[contains(@id,'users-menu')]/a");
-		elementos.get(0).click();
 
-		// AÃ±adir el apartado de la busqueda (Buscar 1)
+		PO_PrivateView.fillCampoBusqueda(driver, "Cesar");
 		
-//		List<WebElement> elementos = SeleniumUtils.EsperaCargaPagina(driver, "free", "//tbody/tr",
-//				PO_View.getTimeout());
-//		assertTrue(elementos.size() == 1);
+		List<WebElement> elementos = SeleniumUtils.EsperaCargaPagina(driver, "free", "//tbody/tr",
+				PO_View.getTimeout());
+		assertTrue(elementos.size() == 1);
 		
-		PO_PrivateView.clickOption(driver, "logout", "text", "IdentifÃ­cate");
+		PO_HomeView.clickOption(driver, "desconectarse", "class", "btn btn-primary");
 	}
 
+	
 	@Test
 	public void PR042() {
 		PO_HomeView.clickOption(driver, "identificarse", "class", "btn btn-primary");
 		PO_LoginView.fillForm(driver, "pruebaDefinitiva2@prueba.com", "55555");
-		PO_View.checkElement(driver, "text", "IdentifÃ­cate");
+		PO_View.checkElement(driver, "text", "de usuario");
 
-		driver.navigate().to("http://localhost:8090/user/list?searchtext=1");
-		PO_View.checkElement(driver, "text", "IdentifÃ­cate");
+		driver.navigate().to("http://localhost:8081/usuarios?busqueda=1");
+		PO_View.checkElement(driver, "text", "de usuario");
 	}
 
+	
 	@Test
 	public void PR051() {
 		PO_HomeView.clickOption(driver, "identificarse", "class", "btn btn-primary");
 		PO_LoginView.fillForm(driver, "pruebaDefinitiva@prueba.com", "55555");
 		PO_View.checkElement(driver, "text", "Bienvenido");
-		List<WebElement> elementos = PO_View.checkElement(driver, "free", "//li[contains(@id,'users-menu')]/a");
-		elementos.get(0).click();
-
-		elementos = PO_View.checkElement(driver, "free", "//a[contains(@href, 'user/list')]");
-		elementos.get(0).click();
 
 		SeleniumUtils.esperarSegundos(driver, 1);
 		
-		By enlace = By.xpath("//td[contains(text(), 'prueba1@email.com')]/following-sibling::*[2]");
+		By enlace = By.xpath("//td[contains(text(), 'Cesar')]/following-sibling::*[2]");
 		driver.findElement(enlace).click();
 		
+		SeleniumUtils.esperarSegundos(driver, 3);
+		PO_View.checkElement(driver, "text", "Solicidud enviada con exito");
 		
-		PO_PrivateView.clickOption(driver, "logout", "text", "IdentifÃ­cate");
+		PO_HomeView.clickOption(driver, "desconectarse", "class", "btn btn-primary");;
+	}
+	
+	@Test
+	public void PR052() {
+		PO_HomeView.clickOption(driver, "identificarse", "class", "btn btn-primary");
+		PO_LoginView.fillForm(driver, "pruebaDefinitiva@prueba.com", "55555");
+		PO_View.checkElement(driver, "text", "Bienvenido");
+
+		SeleniumUtils.esperarSegundos(driver, 1);
+		
+		By enlace = By.xpath("//td[contains(text(), 'Cesar')]/following-sibling::*[2]");
+		assertEquals("Ya se ha eniado una solicitud", driver.findElement(enlace).getText());
+		
+		
+		PO_HomeView.clickOption(driver, "desconectarse", "class", "btn btn-primary");;
 	}
 
+	/**
 	@Test
 	public void PR061() {
 		PO_HomeView.clickOption(driver, "identificarse", "class", "btn btn-primary");

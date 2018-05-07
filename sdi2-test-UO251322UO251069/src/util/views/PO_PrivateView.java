@@ -20,4 +20,12 @@ public class PO_PrivateView extends PO_NavView {
 		By boton = By.className("btn");
 		driver.findElement(boton).click();
 	}
+	
+	static public void fillCampoBusqueda(WebDriver driver,  String texto) {
+		WebElement busqueda = driver.findElement(By.name("busqueda"));
+		busqueda.clear();
+		busqueda.sendKeys(texto);
+		By boton = By.className("btn");
+		driver.findElement(boton).click();
+	}
 }
