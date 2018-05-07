@@ -2,6 +2,15 @@
 var express = require('express');
 var app = express();
 
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Credentials", "true");
+    res.header("Access-Control-Allow-Methods", "POST, GET, DELETE, UPDATE, PUT");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, token");
+    // Debemos especificar todas las headers que se aceptan. Content-Type , token
+    next();
+});
+
 var jwt = require('jsonwebtoken');
 app.set('jwt',jwt);
 
@@ -60,7 +69,9 @@ routerUsuarioToken.use(function(req, res, next) {
     }
 });
 // Aplicar routerUsuarioToken
-app.use('/api/amigos', routerUsuarioToken);
+app.use('/api/usuarios', routerUsuarioToken);
+app.use('/api/mensaje', routerUsuarioToken);
+app.use('/api/mensajes', routerUsuarioToken);
 
 // routerUsuarioSession
 var routerUsuarioSession = express.Router();

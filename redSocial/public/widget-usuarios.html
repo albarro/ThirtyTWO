@@ -1,0 +1,65 @@
+<div id="widget-usuarios" >
+    <input type="text" class="form-control" placeholder="Filtrar por email"
+           id="filtro-nombre"/>
+    <button class="btn" onclick="cargarAmigos()" >Actualizar</button>
+    <table class="table table-hover">
+        <tbody id="tablaCuerpo">
+
+        </tbody>
+    </table>
+</div>
+
+<script>
+    window.history.pushState("", "", "/cliente.html?w=usuarios");
+
+    var amigos;
+    function cargarAmigos(){
+        $.ajax({
+            url: URLbase + "/usuarios",
+            type: "GET",
+            data: { },
+            dataType: 'json',
+            headers: { "token": token },
+            success: function(respuesta) {
+                amigos = respuesta;
+                actualizarTabla(amigos);
+            },
+            error : function (error){
+                $( "#contenedor-principal" ).load("widget-login.html");
+            }
+        });
+    }
+    function actualizarTabla(amigos){
+        $( "#tablaCuerpo" ).empty(); // Vaciar la tabla
+        for (i = 0; i < amigos.length; i++) {
+            $( "#tablaCuerpo" ).append(
+                "<tr>"+
+                "<a onclick=chat('"+amigos[i]+"')>amigos[i]</a><br>"+
+                "<td>"+
+                "</td>"+
+                "</tr>" );
+            // Mucho cuidado con las comillas del eliminarCancion
+            //la id tiene que ir entre comillas ' '
+        }
+    }
+    cargarAmigos();
+
+    function chat(email) {
+        idAmigo = email;
+        $( "#contenedor-principal" ).load( "widget-chat.html");
+    }
+
+
+    $('#filtro-nombre').on('input',function(e){
+        var amigosFiltrados = [];
+        var nombreFiltro = $("#filtro-nombre").val();
+
+        for (i = 0; i < amigos.length; i++) {
+            if (amigos[i].indexOf(nombreFiltro) != -1){
+                amigosFiltrados.push(amigos[i]);
+            }
+        }
+        actualizarTabla(amigosFiltrados);
+    });
+
+</script>

@@ -1,6 +1,6 @@
 module.exports = function (app, jwt, gestorBD) {
 
-    app.get("/api/amigos", function (req, res) {
+    app.get("/api/usuarios", function (req, res) {
         var criterio = {"email": res.usuario};
         gestorBD.obtenerUsuarios(criterio, function (usuarios) {
             if (usuarios == null) {
@@ -43,7 +43,7 @@ module.exports = function (app, jwt, gestorBD) {
         });
     });
 
-    app.post("/api/amigos/mensaje", function (req, res) {
+    app.post("/api/mensaje", function (req, res) {
         var destino = req.body.destino
         var mensaje = {
             emisor: res.usuario,
@@ -84,18 +84,11 @@ module.exports = function (app, jwt, gestorBD) {
 
     });
 
-    app.post("/api/amigos/mensajes", function (req, res) {
-        if(req.body.usuario1 != res.usuario && req.body.usuario2 != res.usuario){
-            res.status(500);
-            res.json({
-                error: "Solo se pueden ver mensajes propios"
-            })
-            return;
-        }
+    app.get("/api/mensajes/:usuario2", function (req, res) {
 
         var criterio = { $or : [
-                { $and : [ { emisor : req.body.usuario1 }, { destino : req.body.usuario2 } ] },
-                { $and : [ { emisor : req.body.usuario2 }, { destino : req.body.usuario1 } ] }
+                { $and : [ { emisor : res.usuario }, { destino : req.param.usuario2 } ] },
+                { $and : [ { emisor : req.param.usuario2 }, { destino : res.usuario } ] }
             ]};
 
         gestorBD.obtenerMensajes(criterio, function (mensajes) {
@@ -113,8 +106,8 @@ module.exports = function (app, jwt, gestorBD) {
 
     });
 
-    app.post("/api/amigos/leido", function (req, res) {
-        var criterio = {"_id": gestorBD.mongo.ObjectID(req.body.id)};
+    app.put("/api/mensaje/:email", function (req, res) {
+        var criterio = {"email": req.param.email};
 
         gestorBD.obtenerMensajes(criterio, function (mensajes) {
             if (mensajes == null) {
