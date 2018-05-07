@@ -87,8 +87,8 @@ module.exports = function (app, jwt, gestorBD) {
     app.get("/api/mensajes/:usuario2", function (req, res) {
 
         var criterio = { $or : [
-                { $and : [ { emisor : res.usuario }, { destino : req.param.usuario2 } ] },
-                { $and : [ { emisor : req.param.usuario2 }, { destino : res.usuario } ] }
+                { $and : [ { emisor : res.usuario }, { destino : req.params.usuario2 } ] },
+                { $and : [ { emisor : req.params.usuario2 }, { destino : res.usuario } ] }
             ]};
 
         gestorBD.obtenerMensajes(criterio, function (mensajes) {
@@ -107,7 +107,7 @@ module.exports = function (app, jwt, gestorBD) {
     });
 
     app.put("/api/mensaje/:email", function (req, res) {
-        var criterio = {"email": req.param.email};
+        var criterio = {"email": req.params.email};
 
         gestorBD.obtenerMensajes(criterio, function (mensajes) {
             if (mensajes == null) {

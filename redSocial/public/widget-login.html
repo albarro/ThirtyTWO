@@ -37,11 +37,12 @@
                 console.log(respuesta.token); // <- Prueba
                 token = respuesta.token;
                 Cookies.set('token', respuesta.token);
-                idActivo = $("#email").val();
+                Cookies.set('idActivo', $("#email").val());
                 $( "#contenedor-principal" ).load( "widget-usuarios.html");
             },
             error : function (error){
                 Cookies.remove('token');
+                Cookies.remove('idActivo');
                 $("#widget-login" )
                     .prepend("<div class='alert alert-danger'>El email o la contraseña no se correponden con ningun usuario registrado</div>");
             }

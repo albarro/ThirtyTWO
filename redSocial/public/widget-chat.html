@@ -1,44 +1,88 @@
-<div id="widget-chat" >
-    <button class="btn" onclick="cargarAmigos()" >Actualizar</button>
+<div id="widget-chat">
+    <h1>Mensajes</h1>
     <table class="table table-hover">
-        <tbody id="tablaCuerpo">
+        <tbody id="tablaChat">
 
         </tbody>
     </table>
+    <div class="form-group">
+        <div class="col-sm-10">
+            <input type="text" class="form-control" name="agregar-texto"
+                   placeholder="Escribe aqui tu mensaje" id="agregar-texto"/>
+        </div>
+    </div>
+    <button class="btn" onclick="enviarMensaje()">Enviar mensaje</button>
 </div>
 
 <script>
+    window.history.pushState("", "", "/cliente.html?w=chat");
 
     var mensajes;
-    $.ajax({
-        url : URLbase + "/mensajes/" + idAmigo,
-        type : "GET",
-        data : {},
-        dataType : 'json',
-        headers : {
-            "token" : token
-        },
-        success : function(respuesta) {
-            mensajes = respuesta;
-            actualizarTabla(mensajes);
-        },
-        error : function(error) {
-            $( "#contenedor-principal" ).load("widget-login.html");
-        }
-    });
 
+    function cargarMensajes() {
+        $.ajax({
+            url: URLbase + "/mensajes/" + idAmigo,
+            type: "GET",
+            data: {},
+            dataType: 'json',
+            headers: {
+                "token": token
+            },
+            success: function (respuesta) {
+                mensajes = respuesta;
+                actualizarTablaChat(mensajes);
+                console.log("Se actualiza" + idAmigo);
+            },
+            error: function (error) {
+                $("#contenedor-principal").load("widget-login.html");
+            }
+        });
+    }
 
-    function actualizarTabla(mensajes){
-        $( "#tablaCuerpo" ).empty(); // Vaciar la tabla
+    function actualizarTablaChat(mensajes) {
+        $("#tablaChat").empty(); // Vaciar la tabla
         for (i = 0; i < mensajes.length; i++) {
-            $( "#tablaCuerpo" ).append(
-                "<tr>"+
-                "<td>mensajes[0].texto</td>"+
-                "<td>"+
-                "</td>"+
-                "</tr>" );
-            // Mucho cuidado con las comillas del eliminarCancion
-            //la id tiene que ir entre comillas ' '
+            if(mensajes[i].emisor == Cookies.get('idActivo')) {
+                $("#tablaChat").append(
+                    "<tr>" +
+                    "<td>" +
+                    "</td>" +
+                    "<td>" + "\t" + mensajes[i].texto + "</td>" +
+                    "</tr>"
+                );
+            }else{
+                $("#tablaChat").append(
+                    "<tr>" +
+                    "<td>"+ mensajes[i].texto + "</td>" +
+                    "<td>" +
+                    "</td>" +
+                    "</tr>"
+                );
+            }
         }
+    }
+
+    cargarMensajes();
+    setInterval(cargarMensajes, 1000);
+
+    function enviarMensaje() {
+        $.ajax({
+            url: URLbase + "/mensaje",
+            type: "POST",
+            data: {
+                emisor: idActivo,
+                destino: idAmigo,
+                texto: $("#agregar-texto").val()
+            },
+            dataType: 'json',
+            headers: {"token": token},
+            success: function (respuesta) {
+                console.log(respuesta); // <-- Prueba
+                $("#agregar-texto").empty();
+            },
+            error: function (error) {
+                $("#contenedor-principal").load("widget-login.html");
+            }
+        });
     }
 </script>
